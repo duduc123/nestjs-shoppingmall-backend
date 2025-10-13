@@ -6,6 +6,6 @@ import { ToolsService } from '../../service/tools/tools.service';
 
 @Module({
   controllers: [MainController, LoginController, ManagerController],
-  providers:[ToolsService]
+  providers: [ToolsService],
 })
 export class AdminModule {}
