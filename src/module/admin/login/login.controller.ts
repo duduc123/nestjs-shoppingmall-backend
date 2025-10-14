@@ -22,19 +22,16 @@ export class LoginController {
   async doLogin(@Request() req, @Response() res) {
     try {
       const { username, password, captcha } = req.body;
-      if (captcha != req.session.captcha) {
+      if (captcha.toUpperCase() != req.session.captcha.toUpperCase()) {
         res.send({ code: 400, msg: '验证码不正确' });
       } else {
-        const user = await this.adminService.find({ username });
+        const passwordHash = this.toolsService.getMd5(password);
+        const user = await this.adminService.find({ "username": username, "password": passwordHash }).then(users => users[0]);
         if (!user) {
-          res.send({ code: 400, msg: '用户不存在' });
+          res.send({ code: 400, msg: '用户名或者密码不正确' });
         } else {
-          if (user.password != password) {
-            res.send({ code: 400, msg: '密码不正确' });
-          } else {
-            req.session.userinfo = user;
-            res.send({ code: 200, msg: '登录成功' });
-          }
+          req.session.userinfo = user;
+          res.send({ code: 200, msg: '登录成功' });
         }
       }
     } catch (err) {

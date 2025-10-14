@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as svgCaptcha from 'svg-captcha';
+import * as md5 from 'md5';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ToolsService {
@@ -11,5 +13,12 @@ export class ToolsService {
       background: '#cc9966',
     });
     return captcha;
+  }
+  getMd5(str: string) {
+    return md5(str);
+  }
+
+  getUUID() {
+    return uuidv4();
   }
 }
