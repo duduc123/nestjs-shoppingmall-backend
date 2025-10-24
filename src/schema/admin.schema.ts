@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const d=new Date();
 
 export const AdminSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId },
   username: { type: String  },
   password: { type: String  },
   mobile: { type: String  },

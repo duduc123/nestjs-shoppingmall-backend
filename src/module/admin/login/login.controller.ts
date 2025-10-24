@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Response, Request } from '@nestjs/common';
 import { ToolsService } from '../../../service/tools/tools.service';
-import { AdminService } from 'src/service/admin/admin.service';
+import { AdminService } from '../../../service/admin/admin.service';
 
 @Controller('admin/login')
 export class LoginController {
@@ -22,19 +22,24 @@ export class LoginController {
   async doLogin(@Request() req, @Response() res) {
     try {
       const { username, password, captcha } = req.body;
+      // console.log('req.session:', req.session);
       if (captcha.toUpperCase() != req.session.captcha.toUpperCase()) {
         res.send({ code: 400, msg: '验证码不正确' });
       } else {
         const passwordHash = this.toolsService.getMd5(password);
-        const user = await this.adminService.find({ "username": username, "password": passwordHash }).then(users => users[0]);
-        if (!user) {
-          res.send({ code: 400, msg: '用户名或者密码不正确' });
+        // console.log('passwordHash:  ', passwordHash);
+        const userResult = await this.adminService.find({ "username": username, "password": passwordHash });
+        if (userResult.length > 0) {
+          console.log('登录成功');
+          req.session.userinfo=userResult[0];
+          res.send({ code: 200, msg: '登录成功', user: userResult[0], token: req.session });
         } else {
-          req.session.userinfo = user;
-          res.send({ code: 200, msg: '登录成功' });
+          console.log('用户名或者密码不正确');
+          res.send({ code: 400, msg: '用户名或者密码不正确' });
         }
       }
     } catch (err) {
+      console.error('Error during login:', err);
       res.send({ code: 500, msg: '服务器错误' });
     }
   }
@@ -49,5 +54,10 @@ export class LoginController {
   async testdb(@Request() req, @Response() res) {
     const alluser = await this.adminService.find();
     res.send(alluser);
+  }
+
+  @Get('testsession')
+  async testsession(@Request() req, @Response() res) {
+    res.send(req.session);
   }
 }

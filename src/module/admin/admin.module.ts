@@ -6,16 +6,32 @@ import { ToolsService } from '../../service/tools/tools.service';
 
 import  { MongooseModule } from '@nestjs/mongoose';
 import { AdminSchema } from '../../schema/admin.schema';
+import { RoleSchema } from '../../schema/role.schema';
+import { AccessSchema } from '../../schema/access.schema';
+import { RoleAccessSchema } from '../../schema/role_access.schema';
 
-import { AdminService } from 'src/service/admin/admin.service';
+import { AdminService } from '../../service/admin/admin.service';
+import { AccessService } from '../../service/access/access.service';
+import { RoleService } from '../../service/role/role.service';
+import { AccessController } from './access/access.controller';
+import { RoleController } from './role/role.controller';
+import { RoleAccessService } from '../../service/role-access/role-access.service';
+import { FocusController } from './focus/focus.controller';
+import { FocusSchema } from '../../schema/focus.schema';
+import { FocusService } from '../../service/focus/focus.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Admin', schema: AdminSchema, collection: 'admin' }
+      { name: 'Admin', schema: AdminSchema, collection: 'admin' },
+      { name: 'Role', schema: RoleSchema, collection: 'role' },
+      { name: 'Access', schema: AccessSchema, collection: 'access' },
+      { name: 'RoleAccess', schema: RoleAccessSchema, collection: 'role_access' },
+      { name: 'Focus', schema: FocusSchema, collection: 'focus' }
     ]),
   ],
-  controllers: [MainController, LoginController, ManagerController],
-  providers: [ToolsService, AdminService],
+  controllers: [MainController, LoginController, ManagerController, AccessController, RoleController, FocusController],
+  providers: [ToolsService, AdminService, AccessService, RoleService, RoleAccessService, FocusService],
+  exports: [AdminService, RoleService, AccessService, RoleAccessService, FocusService]
 })
 export class AdminModule {}
